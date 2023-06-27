@@ -65,7 +65,7 @@ export const useWalletConnect = ({
     ConfigCtrl.setRecentWalletDeepLink(undefined);
   };
 
-  const onConnect = async () => {
+  const onConnect = useCallback(async () => {
     const provider = ClientCtrl.provider();
     try {
       if (!provider) throw new Error('Provider not initialized');
@@ -81,7 +81,7 @@ export const useWalletConnect = ({
       onSessionError();
     }
     return undefined;
-  };
+  }, [accountState.isConnected, sessionParams]);
 
   return {
     connectToWalletService,
