@@ -65,10 +65,7 @@ export const useWalletConnect = ({
 
   const onSessionError = async () => {
     ConfigCtrl.setRecentWalletDeepLink(undefined);
-    ClientCtrl.resetSession();
-    AccountCtrl.resetAccount();
-    WcConnectionCtrl.resetConnection();
-    ConfigCtrl.resetConfig();
+    onConnect();
   };
 
   const onConnect = useCallback(async () => {
