@@ -12,6 +12,7 @@ import type { SessionTypes } from '@walletconnect/types';
 import { setDeepLinkWallet } from '../utils/StorageUtil';
 import { defaultSessionParams } from '../constants/Config';
 import type { IProviderMetadata, ISessionParams } from '../types/coreTypes';
+import { OptionsCtrl } from '../controllers/OptionsCtrl';
 
 interface WCProps {
   projectId: string;
@@ -32,6 +33,7 @@ export const useWalletConnect = ({
   const wallets = useSnapshot(ExplorerCtrl.state.wallets);
   const accountState = useSnapshot(AccountCtrl.state);
   const clientState = useSnapshot(ClientCtrl.state);
+  const { isDataLoaded } = useSnapshot(OptionsCtrl.state);
 
   const connectToWalletService = useCallback(
     (walletInfo: Listing) => {
@@ -63,6 +65,10 @@ export const useWalletConnect = ({
 
   const onSessionError = async () => {
     ConfigCtrl.setRecentWalletDeepLink(undefined);
+    ClientCtrl.resetSession();
+    AccountCtrl.resetAccount();
+    WcConnectionCtrl.resetConnection();
+    ConfigCtrl.resetConfig();
   };
 
   const onConnect = useCallback(async () => {
@@ -81,14 +87,18 @@ export const useWalletConnect = ({
       onSessionError();
     }
     return undefined;
-  }, [accountState.isConnected, sessionParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountState.isConnected]);
 
   return useMemo(
     () => ({
       connectToWalletService,
       isConnected: accountState.isConnected,
       address: accountState.address,
-      provider: clientState.initialized ? ClientCtrl.provider() : undefined,
+      provider:
+        clientState.initialized && isDataLoaded
+          ? ClientCtrl.provider()
+          : undefined,
       uri: pairingUri,
       wallets,
       connect: onConnect,
@@ -101,6 +111,7 @@ export const useWalletConnect = ({
       onConnect,
       pairingUri,
       wallets,
+      isDataLoaded,
     ]
   );
 };
