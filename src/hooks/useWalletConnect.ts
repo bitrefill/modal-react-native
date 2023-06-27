@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { AccountCtrl } from '../controllers/AccountCtrl';
 import { ClientCtrl } from '../controllers/ClientCtrl';
 import { ConfigCtrl } from '../controllers/ConfigCtrl';
@@ -83,13 +83,24 @@ export const useWalletConnect = ({
     return undefined;
   }, [accountState.isConnected, sessionParams]);
 
-  return {
-    connectToWalletService,
-    isConnected: accountState.isConnected,
-    address: accountState.address,
-    provider: clientState.initialized ? ClientCtrl.provider() : undefined,
-    uri: pairingUri,
-    wallets,
-    connect: onConnect,
-  };
+  return useMemo(
+    () => ({
+      connectToWalletService,
+      isConnected: accountState.isConnected,
+      address: accountState.address,
+      provider: clientState.initialized ? ClientCtrl.provider() : undefined,
+      uri: pairingUri,
+      wallets,
+      connect: onConnect,
+    }),
+    [
+      accountState.address,
+      accountState.isConnected,
+      clientState.initialized,
+      connectToWalletService,
+      onConnect,
+      pairingUri,
+      wallets,
+    ]
+  );
 };
