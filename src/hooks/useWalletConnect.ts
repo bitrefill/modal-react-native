@@ -13,6 +13,7 @@ import { setDeepLinkWallet } from '../utils/StorageUtil';
 import { defaultSessionParams } from '../constants/Config';
 import type { IProviderMetadata, ISessionParams } from '../types/coreTypes';
 import { OptionsCtrl } from '../controllers/OptionsCtrl';
+import type { IUniversalProvider } from '@walletconnect/universal-provider';
 
 interface WCProps {
   projectId: string;
@@ -21,12 +22,22 @@ interface WCProps {
   sessionParams?: ISessionParams;
 }
 
+export interface UseWalletConnectReturn {
+  connectToWalletService: (walletInfo: Listing) => void;
+  isConnected: boolean;
+  address?: string;
+  provider?: IUniversalProvider;
+  uri: string;
+  wallets: any;
+  connect: () => void;
+}
+
 export const useWalletConnect = ({
   projectId,
   relayUrl,
   providerMetadata,
   sessionParams = defaultSessionParams,
-}: WCProps) => {
+}: WCProps): UseWalletConnectReturn => {
   useConfigure({ projectId, relayUrl, providerMetadata });
 
   const { pairingUri } = useSnapshot(WcConnectionCtrl.state);
