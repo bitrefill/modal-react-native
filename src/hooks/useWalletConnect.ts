@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { AccountCtrl } from '../controllers/AccountCtrl';
 import { ClientCtrl } from '../controllers/ClientCtrl';
 import { ConfigCtrl } from '../controllers/ConfigCtrl';
@@ -45,6 +45,7 @@ export const useWalletConnect = ({
   const accountState = useSnapshot(AccountCtrl.state);
   const clientState = useSnapshot(ClientCtrl.state);
   const { isDataLoaded } = useSnapshot(OptionsCtrl.state);
+  const shouldLoadWallets = wallets.listings.length === 0;
 
   const connectToWalletService = useCallback(
     (walletInfo: Listing) => {
@@ -61,6 +62,15 @@ export const useWalletConnect = ({
     },
     [pairingUri]
   );
+
+  useEffect(() => {
+    async function getWallets() {
+      if (shouldLoadWallets) {
+        await ExplorerCtrl.getWallets();
+      }
+    }
+    getWallets();
+  }, [shouldLoadWallets]);
 
   const onSessionCreated = async (session: SessionTypes.Struct) => {
     ClientCtrl.setSessionTopic(session.topic);
