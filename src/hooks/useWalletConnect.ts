@@ -29,7 +29,7 @@ export interface UseWalletConnectReturn {
   provider?: IUniversalProvider;
   uri: string;
   wallets: any;
-  connect: () => void;
+  connect: () => Promise<SessionTypes.Struct | undefined>;
 }
 
 export const useWalletConnect = ({
