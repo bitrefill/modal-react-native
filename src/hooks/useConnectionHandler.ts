@@ -45,6 +45,7 @@ export function useConnectionHandler() {
 
   const connectAndWait = useCallback(async () => {
     try {
+      console.log('WC: connectAndWait', isConnected, pairingEnabled);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
       if (!isConnected && pairingEnabled) {
@@ -61,10 +62,12 @@ export function useConnectionHandler() {
     } catch (error) {
       WcConnectionCtrl.setPairingUri('');
       WcConnectionCtrl.setPairingError(true);
+      console.log('WC: connectAndWait error', error);
     }
   }, [isConnected, provider, sessionParams, pairingEnabled]);
 
   useEffect(() => {
+    console.log('WC:', provider, isConnected, pairingEnabled, pairingUri);
     if (provider && !isConnected && pairingEnabled && !pairingUri) {
       connectAndWait();
     }
