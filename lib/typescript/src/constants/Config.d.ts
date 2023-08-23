@@ -1,11 +1,3 @@
-export declare const defaultSessionParams: {
-    namespaces: {
-        eip155: {
-            methods: string[];
-            chains: string[];
-            events: string[];
-            rpcMap: {};
-        };
-    };
-};
+import type { ISessionParams } from '../types/coreTypes';
+export declare const defaultSessionParams: ISessionParams;
 //# sourceMappingURL=Config.d.ts.map

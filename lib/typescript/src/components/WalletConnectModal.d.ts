@@ -1,7 +1,7 @@
 /// <reference types="react" />
 import type { ConfigCtrlState, ThemeCtrlState } from '../types/controllerTypes';
 import type { IProviderMetadata, ISessionParams } from '../types/coreTypes';
-export type Props = Omit<ConfigCtrlState, 'recentWalletDeepLink'> & ThemeCtrlState & {
+export type Props = Omit<ConfigCtrlState, 'recentWallet'> & ThemeCtrlState & {
     providerMetadata: IProviderMetadata;
     sessionParams?: ISessionParams;
     relayUrl?: string;

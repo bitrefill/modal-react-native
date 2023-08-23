@@ -1,7 +1,12 @@
-/// <reference types="react" />
-interface ModalHeaderProps {
-    onClose: () => void;
+import { type ReactNode } from 'react';
+interface Props {
+    title?: string;
+    onActionPress?: () => void;
+    actionIcon?: ReactNode;
+    actionDisabled?: boolean;
+    shadow?: boolean;
+    children?: ReactNode;
 }
-export declare function ModalHeader({ onClose }: ModalHeaderProps): JSX.Element;
+declare function ModalHeader({ title, onActionPress, actionIcon, actionDisabled, shadow, children, }: Props): JSX.Element;
 export default ModalHeader;
 //# sourceMappingURL=ModalHeader.d.ts.map

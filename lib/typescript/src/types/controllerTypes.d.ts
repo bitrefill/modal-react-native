@@ -1,4 +1,4 @@
-import type { IProviderMetadata, IProvider } from './coreTypes';
+import type { IProviderMetadata, IProvider, ISessionParams } from './coreTypes';
 export interface ClientCtrlState {
     initialized: boolean;
     provider?: IProvider;
@@ -6,7 +6,8 @@ export interface ClientCtrlState {
 }
 export interface ConfigCtrlState {
     projectId: string;
-    recentWalletDeepLink?: string;
+    sessionParams?: ISessionParams;
+    recentWallet?: Listing;
     providerMetadata?: IProviderMetadata;
     explorerRecommendedWalletIds?: string[] | 'NONE';
     explorerExcludedWalletIds?: string[] | 'ALL';
@@ -23,10 +24,12 @@ export interface AccountCtrlState {
 }
 export interface WcConnectionCtrlState {
     pairingUri: string;
+    pairingEnabled: boolean;
     pairingError: boolean;
 }
 export interface ThemeCtrlState {
     themeMode?: 'dark' | 'light';
+    accentColor?: string;
 }
 export interface ToastCtrlState {
     open: boolean;
@@ -67,14 +70,18 @@ export interface Listing {
     };
     mobile: PlatformInfo;
     desktop: PlatformInfo;
+    isInstalled: boolean;
 }
 export interface ListingResponse {
     listings: Listing[];
     total: number;
 }
-export type RouterView = 'ConnectWallet' | 'Qrcode' | 'WalletExplorer';
+export type RouterView = 'ConnectWallet' | 'Qrcode' | 'WalletExplorer' | 'Connecting';
 export interface RouterCtrlState {
     history: RouterView[];
     view: RouterView;
+    data?: {
+        wallet?: Listing;
+    };
 }
 //# sourceMappingURL=controllerTypes.d.ts.map

@@ -1,19 +1,16 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { AccountCtrl } from '../controllers/AccountCtrl';
 import { ClientCtrl } from '../controllers/ClientCtrl';
-import { ConfigCtrl } from '../controllers/ConfigCtrl';
 import { ExplorerCtrl } from '../controllers/ExplorerCtrl';
 import { WcConnectionCtrl } from '../controllers/WcConnectionCtrl';
 import { useConfigure } from '../hooks/useConfigure';
 import type { Listing } from '../types/controllerTypes';
 import { ExplorerUtil } from '../utils/ExplorerUtil';
 import { useSnapshot } from 'valtio';
-import type { SessionTypes } from '@walletconnect/types';
-import { setDeepLinkWallet } from '../utils/StorageUtil';
 import { defaultSessionParams } from '../constants/Config';
 import type { IProviderMetadata, ISessionParams } from '../types/coreTypes';
-import { OptionsCtrl } from '../controllers/OptionsCtrl';
 import type { IUniversalProvider } from '@walletconnect/universal-provider';
+import { useConnectionHandler } from 'src/hooks/useConnectionHandler';
 
 interface WCProps {
   projectId: string;
@@ -29,7 +26,7 @@ export interface UseWalletConnectReturn {
   provider?: IUniversalProvider;
   uri: string;
   wallets: any;
-  connect: () => Promise<SessionTypes.Struct | undefined>;
+  // connect: () => Promise<SessionTypes.Struct | undefined>;
 }
 
 export const useWalletConnect = ({
@@ -38,21 +35,18 @@ export const useWalletConnect = ({
   providerMetadata,
   sessionParams = defaultSessionParams,
 }: WCProps): UseWalletConnectReturn => {
-  useConfigure({ projectId, relayUrl, providerMetadata });
+  useConnectionHandler();
+  useConfigure({ projectId, relayUrl, providerMetadata, sessionParams });
 
   const { pairingUri } = useSnapshot(WcConnectionCtrl.state);
   const wallets = useSnapshot(ExplorerCtrl.state.wallets);
-  const accountState = useSnapshot(AccountCtrl.state);
+  const { isConnected, address } = useSnapshot(AccountCtrl.state);
   const clientState = useSnapshot(ClientCtrl.state);
-  const { isDataLoaded } = useSnapshot(OptionsCtrl.state);
   const shouldLoadWallets = wallets.listings.length === 0;
 
   const connectToWalletService = useCallback(
     (walletInfo: Listing) => {
       if (pairingUri) {
-        ConfigCtrl.setRecentWalletDeepLink(
-          walletInfo.mobile?.native || walletInfo.mobile?.universal
-        );
         ExplorerUtil.navigateDeepLink(
           walletInfo.mobile.universal,
           walletInfo.mobile.native,
@@ -72,64 +66,23 @@ export const useWalletConnect = ({
     getWallets();
   }, [shouldLoadWallets]);
 
-  const onSessionCreated = async (session: SessionTypes.Struct) => {
-    ClientCtrl.setSessionTopic(session.topic);
-    const deepLink = ConfigCtrl.getRecentWalletDeepLink();
-    try {
-      if (deepLink) {
-        await setDeepLinkWallet(deepLink);
-        ConfigCtrl.setRecentWalletDeepLink(undefined);
-      }
-      AccountCtrl.getAccount();
-    } catch (error) {}
-  };
-
-  const onSessionError = async () => {
-    ConfigCtrl.setRecentWalletDeepLink(undefined);
-    onConnect();
-  };
-
-  const onConnect = useCallback(async () => {
-    const provider = ClientCtrl.provider();
-    try {
-      if (!provider) throw new Error('Provider not initialized');
-
-      if (!accountState.isConnected) {
-        const session = await provider.connect(sessionParams);
-        if (session) {
-          onSessionCreated(session);
-          return session;
-        }
-      }
-    } catch (error) {
-      onSessionError();
-    }
-    return undefined;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountState.isConnected]);
-
   return useMemo(
     () => ({
       connectToWalletService,
-      isConnected: accountState.isConnected,
-      address: accountState.address,
-      provider:
-        clientState.initialized && isDataLoaded
-          ? ClientCtrl.provider()
-          : undefined,
+      isConnected: isConnected,
+      address: address,
+      provider: clientState.initialized ? ClientCtrl.provider() : undefined,
       uri: pairingUri,
       wallets,
-      connect: onConnect,
+      // connect: onConnect,
     }),
     [
-      accountState.address,
-      accountState.isConnected,
-      clientState.initialized,
       connectToWalletService,
-      onConnect,
+      isConnected,
+      address,
+      clientState.initialized,
       pairingUri,
       wallets,
-      isDataLoaded,
     ]
   );
 };

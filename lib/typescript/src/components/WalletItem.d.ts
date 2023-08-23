@@ -5,8 +5,12 @@ interface Props {
     currentWCURI?: string;
     walletInfo: Listing;
     style?: StyleProp<ViewStyle>;
+    isRecent?: boolean;
 }
-export declare const ITEM_HEIGHT = 80;
-declare function WalletItem({ currentWCURI, walletInfo, style }: Props): JSX.Element;
+export declare const WALLET_MARGIN = 8;
+export declare const WALLET_WIDTH = 80;
+export declare const WALLET_HEIGHT = 98;
+export declare const WALLET_FULL_HEIGHT: number;
+declare function WalletItem({ currentWCURI, walletInfo, style, isRecent }: Props): JSX.Element;
 export default WalletItem;
 //# sourceMappingURL=WalletItem.d.ts.map

@@ -1,7 +1,10 @@
-declare const _default: {
+import type { Listing } from '../types/controllerTypes';
+export declare const DataUtil: {
+    setRecentWallet(wallet: Listing): void;
+    getRecentWallet(): Listing | undefined;
+    getInitialWallets(): Listing[];
     getAllWallets({ search }: {
         search?: string | undefined;
-    }): import("../types/controllerTypes").Listing[];
+    }): Listing[];
 };
-export default _default;
 //# sourceMappingURL=DataUtil.d.ts.map

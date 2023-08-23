@@ -7,7 +7,7 @@ import { ConfigCtrl } from '../controllers/ConfigCtrl';
 import { ClientCtrl } from '../controllers/ClientCtrl';
 import { AccountCtrl } from '../controllers/AccountCtrl';
 import { WcConnectionCtrl } from '../controllers/WcConnectionCtrl';
-import type { IProviderMetadata } from '../types/coreTypes';
+import type { IProviderMetadata, ISessionParams } from '../types/coreTypes';
 import { createUniversalProvider } from '../utils/ProviderUtil';
 import { StorageUtil } from '../utils/StorageUtil';
 import { ThemeCtrl } from '../controllers/ThemeCtrl';
@@ -17,6 +17,7 @@ import type { ThemeCtrlState } from '../types/controllerTypes';
 interface Props {
   projectId: string;
   providerMetadata: IProviderMetadata;
+  sessionParams?: ISessionParams;
   relayUrl?: string;
   themeMode?: ThemeCtrlState['themeMode'];
   accentColor?: ThemeCtrlState['accentColor'];

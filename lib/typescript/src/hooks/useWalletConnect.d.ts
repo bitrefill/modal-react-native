@@ -1,5 +1,4 @@
 import type { Listing } from '../types/controllerTypes';
-import type { SessionTypes } from '@walletconnect/types';
 import type { IProviderMetadata, ISessionParams } from '../types/coreTypes';
 import type { IUniversalProvider } from '@walletconnect/universal-provider';
 interface WCProps {
@@ -15,7 +14,6 @@ export interface UseWalletConnectReturn {
     provider?: IUniversalProvider;
     uri: string;
     wallets: any;
-    connect: () => Promise<SessionTypes.Struct | undefined>;
 }
 export declare const useWalletConnect: ({ projectId, relayUrl, providerMetadata, sessionParams, }: WCProps) => UseWalletConnectReturn;
 export {};
