@@ -11,6 +11,7 @@ import { defaultSessionParams } from '../constants/Config';
 import type { IProviderMetadata, ISessionParams } from '../types/coreTypes';
 import type { IUniversalProvider } from '@walletconnect/universal-provider';
 import { useConnectionHandler } from '../hooks/useConnectionHandler';
+import type { SessionTypes } from '@walletconnect/types';
 
 interface WCProps {
   projectId: string;
@@ -26,7 +27,8 @@ export interface UseWalletConnectReturn {
   provider?: IUniversalProvider;
   uri: string;
   wallets: any;
-  // connect: () => Promise<SessionTypes.Struct | undefined>;
+  session: SessionTypes.Struct | undefined;
+  connect: () => void;
 }
 
 export const useWalletConnect = ({
@@ -35,7 +37,7 @@ export const useWalletConnect = ({
   providerMetadata,
   sessionParams = defaultSessionParams,
 }: WCProps): UseWalletConnectReturn => {
-  useConnectionHandler();
+  const session = useConnectionHandler();
   useConfigure({ projectId, relayUrl, providerMetadata, sessionParams });
 
   const { pairingUri } = useSnapshot(WcConnectionCtrl.state);
@@ -66,6 +68,10 @@ export const useWalletConnect = ({
     getWallets();
   }, [shouldLoadWallets]);
 
+  const onConnect = useCallback(async () => {
+    WcConnectionCtrl.setPairingEnabled(true);
+  }, []);
+
   return useMemo(
     () => ({
       connectToWalletService,
@@ -74,7 +80,8 @@ export const useWalletConnect = ({
       provider: clientState.initialized ? ClientCtrl.provider() : undefined,
       uri: pairingUri,
       wallets,
-      // connect: onConnect,
+      session,
+      connect: onConnect,
     }),
     [
       connectToWalletService,
@@ -83,6 +90,8 @@ export const useWalletConnect = ({
       clientState.initialized,
       pairingUri,
       wallets,
+      session,
+      onConnect,
     ]
   );
 };
