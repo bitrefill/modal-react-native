@@ -12,6 +12,7 @@ import type { IProviderMetadata, ISessionParams } from '../types/coreTypes';
 import type { IUniversalProvider } from '@walletconnect/universal-provider';
 import { useConnectionHandler } from '../hooks/useConnectionHandler';
 import type { SessionTypes } from '@walletconnect/types';
+import { DataUtil } from '../utils/DataUtil';
 
 interface WCProps {
   projectId: string;
@@ -49,6 +50,7 @@ export const useWalletConnect = ({
   const connectToWalletService = useCallback(
     (walletInfo: Listing) => {
       if (pairingUri) {
+        DataUtil.setRecentWallet(walletInfo);
         ExplorerUtil.navigateDeepLink(
           walletInfo.mobile.universal,
           walletInfo.mobile.native,
