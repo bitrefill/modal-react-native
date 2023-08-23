@@ -10,7 +10,7 @@ import { useSnapshot } from 'valtio';
 import { defaultSessionParams } from '../constants/Config';
 import type { IProviderMetadata, ISessionParams } from '../types/coreTypes';
 import type { IUniversalProvider } from '@walletconnect/universal-provider';
-import { useConnectionHandler } from 'src/hooks/useConnectionHandler';
+import { useConnectionHandler } from '../hooks/useConnectionHandler';
 
 interface WCProps {
   projectId: string;
