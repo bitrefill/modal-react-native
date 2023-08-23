@@ -37,8 +37,8 @@ export const useWalletConnect = ({
   providerMetadata,
   sessionParams = defaultSessionParams,
 }: WCProps): UseWalletConnectReturn => {
-  const session = useConnectionHandler();
   useConfigure({ projectId, relayUrl, providerMetadata, sessionParams });
+  const session = useConnectionHandler();
 
   const { pairingUri } = useSnapshot(WcConnectionCtrl.state);
   const wallets = useSnapshot(ExplorerCtrl.state.wallets);
