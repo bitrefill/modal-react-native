@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { Alert, useColorScheme } from 'react-native';
+import { useColorScheme } from 'react-native';
 import { SUBSCRIBER_EVENTS } from '@walletconnect/core';
 import { ExplorerCtrl } from '../controllers/ExplorerCtrl';
 import { OptionsCtrl } from '../controllers/OptionsCtrl';
@@ -9,15 +9,17 @@ import { AccountCtrl } from '../controllers/AccountCtrl';
 import { WcConnectionCtrl } from '../controllers/WcConnectionCtrl';
 import type { IProviderMetadata } from '../types/coreTypes';
 import { createUniversalProvider } from '../utils/ProviderUtil';
-import { removeDeepLinkWallet } from '../utils/StorageUtil';
+import { StorageUtil } from '../utils/StorageUtil';
 import { ThemeCtrl } from '../controllers/ThemeCtrl';
 import { ToastCtrl } from '../controllers/ToastCtrl';
+import type { ThemeCtrlState } from '../types/controllerTypes';
 
 interface Props {
   projectId: string;
   providerMetadata: IProviderMetadata;
   relayUrl?: string;
-  themeMode?: 'light' | 'dark';
+  themeMode?: ThemeCtrlState['themeMode'];
+  accentColor?: ThemeCtrlState['accentColor'];
 }
 
 export function useConfigure(config: Props) {
@@ -28,8 +30,7 @@ export function useConfigure(config: Props) {
     ClientCtrl.resetSession();
     AccountCtrl.resetAccount();
     WcConnectionCtrl.resetConnection();
-    ConfigCtrl.resetConfig();
-    removeDeepLinkWallet();
+    StorageUtil.removeDeepLinkWallet();
   }, []);
 
   const onSessionDelete = useCallback(
@@ -46,18 +47,26 @@ export function useConfigure(config: Props) {
     WcConnectionCtrl.setPairingUri(uri);
   }, []);
 
+  useEffect(() => {
+    if (!projectId) {
+      console.error('projectId not found');
+    }
+  }, [projectId]);
+
   /**
    * Set theme mode
    */
   useEffect(() => {
     ThemeCtrl.setThemeMode(config.themeMode || colorScheme);
-  }, [config.themeMode, colorScheme]);
+    ThemeCtrl.setAccentColor(config.accentColor);
+  }, [config.themeMode, config.accentColor, colorScheme]);
 
   /**
    * Set config
    */
   useEffect(() => {
     ConfigCtrl.setConfig(config);
+    ConfigCtrl.loadRecentWallet();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -68,7 +77,7 @@ export function useConfigure(config: Props) {
     async function fetchWallets() {
       try {
         if (!ExplorerCtrl.state.wallets.total) {
-          await ExplorerCtrl.getRecommendedWallets();
+          await ExplorerCtrl.getWallets();
           OptionsCtrl.setIsDataLoaded(true);
         }
       } catch (error) {
@@ -105,7 +114,7 @@ export function useConfigure(config: Props) {
           ClientCtrl.setInitialized(true);
         }
       } catch (error) {
-        Alert.alert('Error', 'Error initializing WalletConnect SDK');
+        console.error('Error initializing WalletConnect SDK', error);
       }
     }
     if (!ClientCtrl.provider() && projectId && providerMetadata) {

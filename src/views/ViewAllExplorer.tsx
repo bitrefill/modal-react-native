@@ -2,18 +2,16 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, FlatList, ActivityIndicator, View } from 'react-native';
 import { useSnapshot } from 'valtio';
 
-import WalletItem, { ITEM_HEIGHT } from '../components/WalletItem';
-import NavHeader from '../components/NavHeader';
-import { RouterCtrl } from '../controllers/RouterCtrl';
+import WalletItem, { WALLET_FULL_HEIGHT } from '../components/WalletItem';
+import ModalHeader from '../components/ModalHeader';
 import { ExplorerCtrl } from '../controllers/ExplorerCtrl';
 import { OptionsCtrl } from '../controllers/OptionsCtrl';
 import { WcConnectionCtrl } from '../controllers/WcConnectionCtrl';
 import type { RouterProps } from '../types/routerTypes';
 import useTheme from '../hooks/useTheme';
 import { ThemeCtrl } from '../controllers/ThemeCtrl';
-import { UiUtil } from '../utils/UiUtil';
 import SearchBar from '../components/SearchBar';
-import DataUtil from '../utils/DataUtil';
+import { DataUtil } from '../utils/DataUtil';
 import Text from '../components/Text';
 import { useDebounceCallback } from '../hooks/useDebounceCallback';
 
@@ -27,18 +25,13 @@ function ViewAllExplorer({
   const { pairingUri } = useSnapshot(WcConnectionCtrl.state);
   const { themeMode } = useSnapshot(ThemeCtrl.state);
   const { wallets } = useSnapshot(ExplorerCtrl.state);
+  const recentWallet = DataUtil.getRecentWallet();
   const shouldLoadWallets = wallets.listings.length === 0;
   const [walletsLoading, setWalletsLoading] = useState(false);
   const loading = !isDataLoaded || !pairingUri || walletsLoading;
   const [search, setSearch] = useState('');
 
   const onChangeText = useDebounceCallback({ callback: setSearch });
-
-  useEffect(() => {
-    if (!loading) {
-      UiUtil.layoutAnimation();
-    }
-  }, [loading]);
 
   useEffect(() => {
     async function getWallets() {
@@ -53,9 +46,9 @@ function ViewAllExplorer({
 
   return (
     <>
-      <NavHeader onBackPress={RouterCtrl.goBack} shadow>
+      <ModalHeader shadow>
         <SearchBar onChangeText={onChangeText} style={styles.searchbar} />
-      </NavHeader>
+      </ModalHeader>
       {loading ? (
         <ActivityIndicator
           style={{ height: Math.round(windowHeight * 0.6) }}
@@ -66,6 +59,7 @@ function ViewAllExplorer({
           data={DataUtil.getAllWallets({ search })}
           style={{
             height: Math.round(windowHeight * 0.6),
+            backgroundColor: Theme.background1,
           }}
           contentContainerStyle={styles.listContentContainer}
           indicatorStyle={themeMode === 'dark' ? 'white' : 'black'}
@@ -76,9 +70,7 @@ function ViewAllExplorer({
             <View
               style={[
                 styles.emptyContainer,
-                {
-                  height: Math.round(windowHeight * 0.6),
-                },
+                { height: Math.round(windowHeight * 0.6) },
               ]}
             >
               <Text style={[styles.emptyText, { color: Theme.foreground2 }]}>
@@ -88,14 +80,15 @@ function ViewAllExplorer({
           }
           key={isPortrait ? 'portrait' : 'landscape'}
           getItemLayout={(_data, index) => ({
-            length: ITEM_HEIGHT,
-            offset: ITEM_HEIGHT * index,
+            length: WALLET_FULL_HEIGHT,
+            offset: WALLET_FULL_HEIGHT * index,
             index,
           })}
           renderItem={({ item }) => (
             <WalletItem
               currentWCURI={pairingUri}
               walletInfo={item}
+              isRecent={item.id === recentWallet?.id}
               style={{
                 width: isPortrait
                   ? Math.round(windowWidth / 4)

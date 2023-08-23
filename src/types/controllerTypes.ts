@@ -1,4 +1,4 @@
-import type { IProviderMetadata, IProvider } from './coreTypes';
+import type { IProviderMetadata, IProvider, ISessionParams } from './coreTypes';
 
 // -- ClientCtrl ------------------------------------------- //
 export interface ClientCtrlState {
@@ -10,7 +10,8 @@ export interface ClientCtrlState {
 // -- ConfigCtrl ------------------------------------------- //
 export interface ConfigCtrlState {
   projectId: string;
-  recentWalletDeepLink?: string;
+  sessionParams?: ISessionParams;
+  recentWallet?: Listing;
   providerMetadata?: IProviderMetadata;
   explorerRecommendedWalletIds?: string[] | 'NONE';
   explorerExcludedWalletIds?: string[] | 'ALL';
@@ -35,12 +36,14 @@ export interface AccountCtrlState {
 // -- WcConnectionCtrl ------------------------------------- //
 export interface WcConnectionCtrlState {
   pairingUri: string;
+  pairingEnabled: boolean;
   pairingError: boolean;
 }
 
 // -- ThemeCtrl --------------------------------------------- //
 export interface ThemeCtrlState {
   themeMode?: 'dark' | 'light';
+  accentColor?: string;
 }
 
 // -- ToastCtrl ------------------------------------------ //
@@ -86,6 +89,9 @@ export interface Listing {
   };
   mobile: PlatformInfo;
   desktop: PlatformInfo;
+
+  //doesn't come from api
+  isInstalled: boolean;
 }
 
 export interface ListingResponse {
@@ -94,9 +100,16 @@ export interface ListingResponse {
 }
 
 // -- RouterCtrl --------------------------------------------- //
-export type RouterView = 'ConnectWallet' | 'Qrcode' | 'WalletExplorer';
+export type RouterView =
+  | 'ConnectWallet'
+  | 'Qrcode'
+  | 'WalletExplorer'
+  | 'Connecting';
 
 export interface RouterCtrlState {
   history: RouterView[];
   view: RouterView;
+  data?: {
+    wallet?: Listing;
+  };
 }

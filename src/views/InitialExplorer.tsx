@@ -1,72 +1,67 @@
-import { useEffect, useMemo } from 'react';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { useSnapshot } from 'valtio';
 
-import WalletItem from '../components/WalletItem';
+import WalletItem, { WALLET_FULL_HEIGHT } from '../components/WalletItem';
 import ViewAllBox from '../components/ViewAllBox';
 import QRIcon from '../assets/QRCode';
-import NavHeader from '../components/NavHeader';
+import ModalHeader from '../components/ModalHeader';
 import type { Listing } from '../types/controllerTypes';
 import { RouterCtrl } from '../controllers/RouterCtrl';
-import { ExplorerCtrl } from '../controllers/ExplorerCtrl';
 import { OptionsCtrl } from '../controllers/OptionsCtrl';
 import { WcConnectionCtrl } from '../controllers/WcConnectionCtrl';
+import { ConfigCtrl } from '../controllers/ConfigCtrl';
 import type { RouterProps } from '../types/routerTypes';
 import useTheme from '../hooks/useTheme';
-import { UiUtil } from '../utils/UiUtil';
+import { DataUtil } from '../utils/DataUtil';
 
-function InitialExplorer({ windowHeight, isPortrait }: RouterProps) {
+function InitialExplorer({ isPortrait }: RouterProps) {
   const Theme = useTheme();
   const { isDataLoaded } = useSnapshot(OptionsCtrl.state);
   const { pairingUri } = useSnapshot(WcConnectionCtrl.state);
-  const { recommendedWallets } = useSnapshot(ExplorerCtrl.state);
+  const { explorerExcludedWalletIds } = useSnapshot(ConfigCtrl.state);
+  const wallets = DataUtil.getInitialWallets();
+  const recentWallet = DataUtil.getRecentWallet();
+  const loading = !isDataLoaded || !pairingUri;
+  const viewHeight = isPortrait ? WALLET_FULL_HEIGHT * 2 : WALLET_FULL_HEIGHT;
 
-  const loading = useMemo(
-    () => !isDataLoaded || !pairingUri,
-    [isDataLoaded, pairingUri]
-  );
-
-  useEffect(() => {
-    if (!loading) {
-      UiUtil.layoutAnimation();
-    }
-  }, [loading]);
-
-  const wallets = useMemo(() => {
-    return recommendedWallets.slice(0, 7);
-  }, [recommendedWallets]);
-
-  const viewAllButtonWallets = useMemo(() => {
-    return recommendedWallets.slice(-4);
-  }, [recommendedWallets]);
+  const showViewAllButton =
+    wallets.length > 8 || explorerExcludedWalletIds !== 'ALL';
 
   return (
     <>
-      <NavHeader
+      <ModalHeader
         title="Connect your wallet"
         onActionPress={() => RouterCtrl.push('Qrcode')}
         actionIcon={<QRIcon width={22} height={22} fill={Theme.accent} />}
       />
       {loading ? (
         <ActivityIndicator
-          style={{ height: Math.round(windowHeight * 0.2) }}
+          style={{ height: viewHeight }}
           color={Theme.accent}
         />
       ) : (
-        <View style={styles.explorerContainer}>
-          {wallets.map((item: Listing) => (
+        <View
+          style={[
+            styles.explorerContainer,
+            { height: viewHeight, backgroundColor: Theme.background1 },
+          ]}
+        >
+          {wallets.slice(0, showViewAllButton ? 7 : 8).map((item: Listing) => (
             <WalletItem
               walletInfo={item}
               key={item.id}
+              isRecent={item.id === recentWallet?.id}
               currentWCURI={pairingUri}
-              style={isPortrait && styles.wallet}
+              style={isPortrait ? styles.portraitItem : styles.landscapeItem}
             />
           ))}
-          <ViewAllBox
-            onPress={() => RouterCtrl.push('WalletExplorer')}
-            wallets={viewAllButtonWallets}
-            style={isPortrait && styles.wallet}
-          />
+          {showViewAllButton && (
+            <ViewAllBox
+              onPress={() => RouterCtrl.push('WalletExplorer')}
+              wallets={wallets.slice(-4)}
+              style={isPortrait ? styles.portraitItem : styles.landscapeItem}
+            />
+          )}
         </View>
       )}
     </>
@@ -77,11 +72,13 @@ const styles = StyleSheet.create({
   explorerContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
     alignItems: 'center',
   },
-  wallet: {
+  portraitItem: {
     width: '25%',
+  },
+  landscapeItem: {
+    width: '12.5%',
   },
 });
 

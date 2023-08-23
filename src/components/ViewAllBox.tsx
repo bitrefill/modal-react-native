@@ -1,17 +1,11 @@
-import {
-  Image,
-  StyleSheet,
-  View,
-  Text,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
+import { StyleSheet, View, Text, StyleProp, ViewStyle } from 'react-native';
 
 import { ExplorerCtrl } from '../controllers/ExplorerCtrl';
 import useTheme from '../hooks/useTheme';
 import type { Listing } from '../types/controllerTypes';
 import Touchable from './Touchable';
-import WalletIcon from '../assets/WalletIcon';
+import { WALLET_HEIGHT, WALLET_WIDTH, WALLET_MARGIN } from './WalletItem';
+import WalletImage from './WalletImage';
 
 interface Props {
   onPress: any;
@@ -29,28 +23,15 @@ function ViewAllBox({ onPress, wallets, style }: Props) {
       <View style={[styles.icons, { borderColor: Theme.overlayThin }]}>
         <View style={styles.row}>
           {_wallets.map((wallet) => (
-            <Image
+            <WalletImage
               key={wallet.id}
-              source={{
-                uri: ExplorerCtrl.getWalletImageUrl(wallet.image_id),
-              }}
-              style={[styles.icon, { borderColor: Theme.overlayThin }]}
+              size="xs"
+              url={ExplorerCtrl.getWalletImageUrl(wallet.image_id)}
+              style={styles.icon}
             />
           ))}
           {_emptyBoxes.map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.icon,
-                styles.placeholderIcon,
-                {
-                  borderColor: Theme.overlayThin,
-                  backgroundColor: Theme.background2,
-                },
-              ]}
-            >
-              <WalletIcon height={15} width={15} />
-            </View>
+            <WalletImage key={i} size="xs" style={styles.icon} />
           ))}
         </View>
       </View>
@@ -68,10 +49,10 @@ function ViewAllBox({ onPress, wallets, style }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    width: 80,
-    height: 80,
+    width: WALLET_WIDTH,
+    height: WALLET_HEIGHT,
     alignItems: 'center',
-    marginVertical: 16,
+    marginVertical: WALLET_MARGIN,
   },
   icons: {
     height: 60,
@@ -82,16 +63,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icon: {
-    height: 23,
-    width: 23,
-    borderRadius: 8,
     margin: 1,
-    borderWidth: 1,
-  },
-  placeholderIcon: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderStyle: 'dashed',
   },
   row: {
     flexDirection: 'row',

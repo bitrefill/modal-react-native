@@ -1,11 +1,14 @@
 import { useMemo } from 'react';
 import { useSnapshot } from 'valtio';
 
+import { useOrientation } from '../hooks/useOrientation';
 import QRCodeView from '../views/QRCodeView';
 import ViewAllExplorer from '../views/ViewAllExplorer';
 import { RouterCtrl } from '../controllers/RouterCtrl';
 import InitialExplorer from '../views/InitialExplorer';
-import { useOrientation } from '../hooks/useOrientation';
+import ConnectingView from '../views/ConnectingView';
+import useTheme from '../hooks/useTheme';
+import { StyleSheet, View } from 'react-native';
 
 interface Props {
   onCopyClipboard?: (value: string) => void;
@@ -13,6 +16,7 @@ interface Props {
 
 export function ModalRouter(props: Props) {
   const routerState = useSnapshot(RouterCtrl.state);
+  const Theme = useTheme();
   const { height, width, isPortrait } = useOrientation();
 
   const ViewComponent = useMemo(() => {
@@ -23,17 +27,28 @@ export function ModalRouter(props: Props) {
         return ViewAllExplorer;
       case 'Qrcode':
         return QRCodeView;
+      case 'Connecting':
+        return ConnectingView;
       default:
         return InitialExplorer;
     }
   }, [routerState.view]);
 
   return (
-    <ViewComponent
-      windowHeight={height}
-      windowWidth={width}
-      isPortrait={isPortrait}
-      {...props}
-    />
+    <View style={[styles.wrapper, { backgroundColor: Theme.background1 }]}>
+      <ViewComponent
+        windowHeight={height}
+        windowWidth={width}
+        isPortrait={isPortrait}
+        {...props}
+      />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  wrapper: {
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+  },
+});
