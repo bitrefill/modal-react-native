@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useSnapshot } from 'valtio';
 
 import { AccountCtrl } from '../controllers/AccountCtrl';
@@ -20,9 +20,6 @@ export function useConnectionHandler() {
   const { pairingEnabled, pairingUri } = useSnapshot(WcConnectionCtrl.state);
   const { provider } = useSnapshot(ClientCtrl.state);
   const { sessionParams } = useSnapshot(ConfigCtrl.state);
-  const [connectionSession, setConnectionSession] = useState<
-    SessionTypes.Struct | undefined
-  >(undefined);
 
   const onSessionCreated = async (session: SessionTypes.Struct) => {
     WcConnectionCtrl.setPairingError(false);
@@ -55,7 +52,6 @@ export function useConnectionHandler() {
 
         if (session) {
           onSessionCreated(session);
-          setConnectionSession(session);
         }
       }
     } catch (error) {
@@ -70,5 +66,5 @@ export function useConnectionHandler() {
     }
   }, [provider, connectAndWait, isConnected, pairingEnabled, pairingUri]);
 
-  return connectionSession;
+  return null;
 }

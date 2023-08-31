@@ -11,7 +11,6 @@ import { defaultSessionParams } from '../constants/Config';
 import type { IProviderMetadata, ISessionParams } from '../types/coreTypes';
 import type { IUniversalProvider } from '@walletconnect/universal-provider';
 import { useConnectionHandler } from '../hooks/useConnectionHandler';
-import type { SessionTypes } from '@walletconnect/types';
 import { DataUtil } from '../utils/DataUtil';
 
 interface WCProps {
@@ -28,7 +27,6 @@ export interface UseWalletConnectReturn {
   provider?: IUniversalProvider;
   uri: string;
   wallets: any;
-  session: SessionTypes.Struct | undefined;
   connect: () => void;
 }
 
@@ -39,7 +37,7 @@ export const useWalletConnect = ({
   sessionParams = defaultSessionParams,
 }: WCProps): UseWalletConnectReturn => {
   useConfigure({ projectId, relayUrl, providerMetadata, sessionParams });
-  const session = useConnectionHandler();
+  useConnectionHandler();
 
   const { pairingUri } = useSnapshot(WcConnectionCtrl.state);
   const wallets = useSnapshot(ExplorerCtrl.state.wallets);
@@ -82,7 +80,6 @@ export const useWalletConnect = ({
       provider: clientState.initialized ? ClientCtrl.provider() : undefined,
       uri: pairingUri,
       wallets,
-      session,
       connect: onConnect,
     }),
     [
@@ -92,7 +89,6 @@ export const useWalletConnect = ({
       clientState.initialized,
       pairingUri,
       wallets,
-      session,
       onConnect,
     ]
   );

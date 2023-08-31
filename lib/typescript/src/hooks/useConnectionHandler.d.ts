@@ -1,3 +1,2 @@
-import type { SessionTypes } from '@walletconnect/types';
-export declare function useConnectionHandler(): SessionTypes.Struct | undefined;
+export declare function useConnectionHandler(): null;
 //# sourceMappingURL=useConnectionHandler.d.ts.map
