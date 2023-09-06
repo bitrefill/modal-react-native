@@ -1,4 +1,4 @@
-import { NativeModules, Platform, Linking } from 'react-native';
+import { NativeModules, Platform } from 'react-native';
 
 const LINKING_ERROR =
   `The package 'react-native-installed-app' doesn't seem to be linked. Make sure: \n\n` +
@@ -27,7 +27,7 @@ const InstalledApp = InstalledAppModule
 
 async function isAppInstalledIos(deepLink?: string): Promise<boolean> {
   try {
-    return deepLink ? Linking.canOpenURL(deepLink) : Promise.resolve(false);
+    return deepLink ? Promise.resolve(false) : Promise.resolve(false);
   } catch (error) {
     return Promise.resolve(false);
   }
