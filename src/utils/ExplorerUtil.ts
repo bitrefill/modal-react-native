@@ -43,9 +43,9 @@ async function fetchListings(
     });
   }
 
-  const request = await fetch(url.toString(), { headers });
+  await fetch(url.toString(), { headers });
 
-  return request.json() as Promise<ListingResponse>;
+  return {} as Promise<ListingResponse>;
 }
 
 function getUrlParams(url: string | null): { [key: string]: string } {
