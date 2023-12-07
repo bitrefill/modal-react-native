@@ -81,7 +81,7 @@ export const ExplorerCtrl = {
     }
 
     // Prefetch some wallet images
-    ExplorerUtil.prefetchWalletImages(_listings.slice(0, 20));
+    // ExplorerUtil.prefetchWalletImages(_listings.slice(0, 20));
 
     state.wallets = { listings: _listings, page: 1, total };
     return _listings;
