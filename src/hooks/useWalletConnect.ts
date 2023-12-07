@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { AccountCtrl } from '../controllers/AccountCtrl';
 import { ClientCtrl } from '../controllers/ClientCtrl';
 import { ExplorerCtrl } from '../controllers/ExplorerCtrl';
@@ -27,6 +27,7 @@ export interface UseWalletConnectReturn {
   provider?: IUniversalProvider;
   uri: string;
   wallets: any;
+  getWallets: () => void;
   connect: () => void;
 }
 
@@ -59,14 +60,13 @@ export const useWalletConnect = ({
     [pairingUri]
   );
 
-  useEffect(() => {
-    async function getWallets() {
-      if (shouldLoadWallets) {
-        await ExplorerCtrl.getWallets();
-      }
+  const getWallets = useCallback(async () => {
+    if (shouldLoadWallets) {
+      const loadedWallets = await ExplorerCtrl.getWallets();
+      return loadedWallets;
     }
-    getWallets();
-  }, [shouldLoadWallets]);
+    return wallets;
+  }, [shouldLoadWallets, wallets]);
 
   const onConnect = useCallback(async () => {
     WcConnectionCtrl.setPairingEnabled(true);
@@ -80,6 +80,7 @@ export const useWalletConnect = ({
       provider: clientState.initialized ? ClientCtrl.provider() : undefined,
       uri: pairingUri,
       wallets,
+      getWallets,
       connect: onConnect,
     }),
     [
@@ -89,6 +90,7 @@ export const useWalletConnect = ({
       clientState.initialized,
       pairingUri,
       wallets,
+      getWallets,
       onConnect,
     ]
   );

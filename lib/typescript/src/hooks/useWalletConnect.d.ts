@@ -14,6 +14,7 @@ export interface UseWalletConnectReturn {
     provider?: IUniversalProvider;
     uri: string;
     wallets: any;
+    getWallets: () => void;
     connect: () => void;
 }
 export declare const useWalletConnect: ({ projectId, relayUrl, providerMetadata, sessionParams, }: WCProps) => UseWalletConnectReturn;
