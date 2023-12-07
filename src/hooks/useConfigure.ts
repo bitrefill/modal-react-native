@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { SUBSCRIBER_EVENTS } from '@walletconnect/core';
-import { ExplorerCtrl } from '../controllers/ExplorerCtrl';
-import { OptionsCtrl } from '../controllers/OptionsCtrl';
+// import { ExplorerCtrl } from '../controllers/ExplorerCtrl';
+// import { OptionsCtrl } from '../controllers/OptionsCtrl';
 import { ConfigCtrl } from '../controllers/ConfigCtrl';
 import { ClientCtrl } from '../controllers/ClientCtrl';
 import { AccountCtrl } from '../controllers/AccountCtrl';
@@ -11,7 +11,7 @@ import type { IProviderMetadata, ISessionParams } from '../types/coreTypes';
 import { createUniversalProvider } from '../utils/ProviderUtil';
 import { StorageUtil } from '../utils/StorageUtil';
 import { ThemeCtrl } from '../controllers/ThemeCtrl';
-import { ToastCtrl } from '../controllers/ToastCtrl';
+// import { ToastCtrl } from '../controllers/ToastCtrl';
 import type { ThemeCtrlState } from '../types/controllerTypes';
 
 interface Props {
@@ -74,19 +74,19 @@ export function useConfigure(config: Props) {
   /**
    * Fetch wallet list
    */
-  useEffect(() => {
-    async function fetchWallets() {
-      try {
-        if (!ExplorerCtrl.state.wallets.total) {
-          await ExplorerCtrl.getWallets();
-          OptionsCtrl.setIsDataLoaded(true);
-        }
-      } catch (error) {
-        ToastCtrl.openToast('Network error', 'error');
-      }
-    }
-    fetchWallets();
-  }, []);
+  // useEffect(() => {
+  //   async function fetchWallets() {
+  //     try {
+  //       if (!ExplorerCtrl.state.wallets.total) {
+  //         await ExplorerCtrl.getWallets();
+  //         OptionsCtrl.setIsDataLoaded(true);
+  //       }
+  //     } catch (error) {
+  //       ToastCtrl.openToast('Network error', 'error');
+  //     }
+  //   }
+  //   fetchWallets();
+  // }, []);
 
   /**
    * Initialize provider
