@@ -19,6 +19,7 @@ export const ExplorerCtrl = {
   state,
 
   async getWallets(params?: ListingParams) {
+    console.log('CALLED GET WALLETS');
     const extendedParams: ListingParams = { ...params };
     const { explorerRecommendedWalletIds, explorerExcludedWalletIds } =
       ConfigCtrl.state;
